@@ -108,9 +108,9 @@ def detect_multi_scale(model, img, scales, recepive_field):
 def detect_webcam(model):
 	recepive_field_size, offset = recepive_field(model)
 	print "Receptive field", recepive_field_size, "Center offset", offset
-	scales = [2.5, 3, 3.5, 4]
-	scales = [2.7]
+	scales = [2.7, 3.5]
 	cap = cv2.VideoCapture(0)
+
 	while True:
 		coordinates = []
 		ret, img = cap.read()

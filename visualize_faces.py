@@ -23,6 +23,7 @@ def tensor_to_np_image(input):
     img = np.transpose(img, (1, 2, 0))
     img = img - np.min(img)
     img = img / np.max(img)
+    img = img[:, :, ::-1]
     return img    
 
 def activation_maximization(model, filter_index):
@@ -60,6 +61,7 @@ def activation_maximization(model, filter_index):
         # Take the middle pixel in the image.
         # For classification this will be just out[0, category]
         loss = out[0, filter_index, size//2, size//2]
+        #loss = out[0, filter_index, :, :].mean()
         loss.backward()
 
         # Normalize the gradient to a unit vector
@@ -67,7 +69,7 @@ def activation_maximization(model, filter_index):
         grad_cpu = grad_cpu / torch.norm(grad_cpu, 2)
         data = grad_cpu.data.numpy()
 
-        input = input - lr * grad_cpu
+        input = input + lr * grad_cpu
         input.volatile=False
         input.requires_grad=True
 
@@ -98,7 +100,7 @@ if __name__ == '__main__':
     model = nn.Sequential(*[model._modules[i] \
         for i in model._modules.keys()[:-2]])
 
-    for filter_index in range(30):
+    for filter_index in range(0, 30):
     	for index in range(10):
             img = activation_maximization(model, filter_index)
             output_path = "_".join([str(filter_index), str(index)]) + ".jpg"
